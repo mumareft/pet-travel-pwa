@@ -47,6 +47,12 @@ public class TripTaskService {
         return tripTaskRepository.saveAll(tasks);
     }
 
+    @Transactional
+    public List<TripTask> recalculateTasksForTrip(Trip trip) {
+        tripTaskRepository.deleteByTrip_Id(trip.getId());
+        return createTasksForTrip(trip);
+    }
+
     @Transactional(readOnly = true)
     public List<TripTask> getTasksForTrip(Long tripId) {
         return tripTaskRepository.findByTrip_Id(tripId);
