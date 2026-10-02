@@ -3,10 +3,9 @@ package com.pettravel.controllers;
 import com.pettravel.dto.DeadlineResponse;
 import com.pettravel.models.Trip;
 import com.pettravel.repositories.TripRepository;
-import com.pettravel.services.TravelRuleService;
+import com.pettravel.services.TripTaskService;
+import jakarta.transaction.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
 
 import java.util.List;
 
@@ -14,12 +13,12 @@ import java.util.List;
 @RequestMapping ("/trips")
 public class TripController {
     
-    private final TravelRuleService travelRuleService;
+    private final TripTaskService tripTaskService;
     private final TripRepository tripRepository;
 
-    public TripController(TripRepository tripRepository, TravelRuleService travelRuleService) {
+    public TripController(TripRepository tripRepository, TripTaskService tripTaskService) {
         this.tripRepository = tripRepository;
-        this.travelRuleService = travelRuleService;
+        this.tripTaskService = tripTaskService;
     }
 
     @GetMapping
@@ -33,8 +32,12 @@ public class TripController {
     }
 
     @PostMapping
+    @Transactional
     public Trip createTrip(@RequestBody Trip trip) {
-        return tripRepository.save(trip);
+        Trip savedTrip = tripRepository.save(trip);
+        // Generate and persist one task for each rule matching the destination country.
+        tripTaskService.createTasksForTrip(savedTrip);
+        return savedTrip;
     }
 
     @PutMapping("/{id}")
@@ -57,14 +60,12 @@ public class TripController {
 
     @GetMapping ("/{id}/deadlines")
     public List<DeadlineResponse> getTripDeadlines(@PathVariable Long id) {
-
-        Trip trip = tripRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Trip not found"));
-        
-        return trip.getTravelRules().stream()
-                .map(rule -> {
-                    LocalDate deadline = travelRuleService.calculateDeadline(trip, rule);
-                    return new DeadlineResponse(rule.getName(), deadline);
-                })
+        tripRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Trip not found"));
+        return tripTaskService.getTasksForTrip(id).stream()
+                .map(task -> new DeadlineResponse(
+                        task.getRule().getName(),
+                        task.getEarliestDateTime(),
+                        task.getLatestDateTime()))
                 .toList();
     }
 }

@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 public class Trip {
@@ -14,15 +15,16 @@ public class Trip {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDate departureDate;
-    private LocalDate returnDate;
+    private LocalDateTime departureDate;
+    private LocalDateTime arrivalDate;
+    private LocalDateTime returnDate;
     private String originCountry;
     private String destinationCountry;
 
     public Trip() {
     }
 
-    public Trip(LocalDate departureDate, LocalDate returnDate, String originCountry, String destinationCountry) {
+    public Trip(LocalDateTime departureDate, LocalDateTime returnDate, String originCountry, String destinationCountry) {
         this.departureDate = departureDate;
         this.returnDate = returnDate;
         this.originCountry = originCountry;
@@ -37,19 +39,27 @@ public class Trip {
         this.id = id;
     }
 
-    public LocalDate getDepartureDate() {
+    public LocalDateTime getDepartureDate() {
         return departureDate;
     }
 
-    public void setDepartureDate(LocalDate departureDate) {
+    public void setDepartureDate(LocalDateTime departureDate) {
         this.departureDate = departureDate;
     }
 
-    public LocalDate getReturnDate() {
+    public LocalDateTime getArrivalDate() {
+        return arrivalDate;
+    }
+
+    public void setArrivalDate(LocalDateTime arrivalDate) {
+        this.arrivalDate = arrivalDate;
+    }
+
+    public LocalDateTime getReturnDate() {
         return returnDate;
     }
 
-    public void setReturnDate(LocalDate returnDate) {
+    public void setReturnDate(LocalDateTime returnDate) {
         this.returnDate = returnDate;
     }
 

@@ -14,13 +14,17 @@ public class Pet {
 
     private String name;
     private String microchipNumber;
+    private String species;
+    private String breed;
 
     public Pet() {
     }
 
-    public Pet(String name, String microchipNumber) {
+    public Pet(String name, String microchipNumber, String species, String breed) {
         this.name = name;
         this.microchipNumber = microchipNumber;
+        this.species = species;
+        this.breed = breed;
     }
 
     public Long getId() {
@@ -45,5 +49,21 @@ public class Pet {
 
     public void setMicrochipNumber(String microchipNumber) {
         this.microchipNumber = microchipNumber;
+    }
+    
+    public String getSpecies() {
+        return species;
+    }
+
+    public void setSpecies(String species) {
+        this.species = species;
+    }
+
+    public String getBreed() {
+        return breed;
+    }
+
+    public void setBreed(String breed) {
+        this.breed = breed;
     }
 }
