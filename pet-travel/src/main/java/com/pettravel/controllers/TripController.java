@@ -1,5 +1,6 @@
 package com.pettravel.controllers;
 
+import com.pettravel.dto.DeadlineResponse;
 import com.pettravel.models.Trip;
 import com.pettravel.repositories.TripRepository;
 import com.pettravel.services.TravelRuleService;
@@ -54,14 +55,16 @@ public class TripController {
     }
 
 
-
     @GetMapping ("/{id}/deadlines")
-    public String getTripDeadlines(@PathVariable Long id) {
+    public List<DeadlineResponse> getTripDeadlines(@PathVariable Long id) {
 
         Trip trip = tripRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Trip not found"));
         
-        LocalDate vetDeadline = travelRuleService.calculateVetCheckDate(trip.getDepartureDate());
-
-        return "Vet Check Deadline: " + vetDeadline;
+        return trip.getTravelRules().stream()
+                .map(rule -> {
+                    LocalDate deadline = travelRuleService.calculateDeadline(trip, rule);
+                    return new DeadlineResponse(rule.getName(), deadline);
+                })
+                .toList();
     }
 }

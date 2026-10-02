@@ -1,20 +1,27 @@
 package com.pettravel.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.*;
+
+
 
 @Entity 
 public class TravelRule {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    private ReferenceType referenceType;
+
     private int daysBefore;
+
+    public enum ReferenceType {
+        DEPARTURE,
+        RETURN
+    }
 
     public TravelRule() {
     }
@@ -55,5 +62,13 @@ public class TravelRule {
 
     public void setDaysBefore(int daysBefore) {
         this.daysBefore = daysBefore;
+    }
+
+    public ReferenceType getReferenceType() {
+        return referenceType;
+    }
+
+    public void setReferenceType(ReferenceType referenceType) {
+        this.referenceType = referenceType;
     }
 }

@@ -2,14 +2,23 @@ package com.pettravel.services;
 
 import org.springframework.stereotype.Service;
 
+import com.pettravel.models.TravelRule;
+import com.pettravel.models.Trip;
+
 import java.time.LocalDate;
 
 @Service 
 public class TravelRuleService {
     
-    public LocalDate calculateVetCheckDate(LocalDate departureDate) {
-        // Calculate the vet check date based on the departure date
-        // For example, let's say the vet check must be done at least 7 days before departure
-        return departureDate.minusDays(7);
+    public LocalDate calculateDeadline(Trip trip, TravelRule rule) {
+
+        LocalDate referenceDate;
+        
+        if (rule.getReferenceType() == TravelRule.ReferenceType.DEPARTURE) {
+            referenceDate = trip.getDepartureDate();
+        } else {
+            referenceDate = trip.getReturnDate();
+        }
+        return referenceDate.minusDays(rule.getDaysBefore());
     }
 }
