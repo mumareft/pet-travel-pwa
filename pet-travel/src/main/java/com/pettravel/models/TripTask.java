@@ -74,7 +74,7 @@ public class TripTask {
         this.rule = rule;
     }
 
-    public boolean isStatus() {
+    public boolean isCompleted() {
         return status;
     }
 

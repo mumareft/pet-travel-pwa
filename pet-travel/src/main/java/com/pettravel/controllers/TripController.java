@@ -1,6 +1,6 @@
 package com.pettravel.controllers;
 
-import com.pettravel.dto.DeadlineResponse;
+import com.pettravel.dto.TaskResponse;
 import com.pettravel.models.Trip;
 import com.pettravel.services.TripService;
 import org.springframework.web.bind.annotation.*;
@@ -42,8 +42,13 @@ public class TripController {
         tripService.deleteTrip(id);
     }
 
-    @GetMapping("/{id}/deadlines")
-    public List<DeadlineResponse> getTripDeadlines(@PathVariable Long id) {
-        return tripService.getTripDeadlines(id);
+    @GetMapping ("/{id}/tasks")
+    public List<TaskResponse> getTripTasks(@PathVariable Long id) {
+        return tripService.getTripTasks(id);
+    }
+    
+    @PutMapping ("/{tripId}/pets/{petId}")
+    public Trip addPetToTrip(@PathVariable Long tripId, @PathVariable Long petId) {
+        return tripService.addPetToTrip(tripId, petId);
     }
 }

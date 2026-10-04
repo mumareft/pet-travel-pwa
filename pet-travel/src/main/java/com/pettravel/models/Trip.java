@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 public class Trip {
@@ -19,6 +20,7 @@ public class Trip {
     private LocalDateTime returnDate;
     private String originCountry;
     private String destinationCountry;
+    private List<Pet> pets; 
 
     public Trip() {
     }
@@ -76,5 +78,13 @@ public class Trip {
 
     public void setDestinationCountry(String destinationCountry) {
         this.destinationCountry = destinationCountry;
+    }
+
+    public List<Pet> getPets() {
+        return pets;
+    }
+
+    public void setPets(List<Pet> pets) {
+        this.pets = pets;
     }
 }

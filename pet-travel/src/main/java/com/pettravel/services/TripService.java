@@ -5,19 +5,23 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pettravel.dto.DeadlineResponse;
+import com.pettravel.dto.TaskResponse;
+import com.pettravel.models.Pet;
 import com.pettravel.models.Trip;
 import com.pettravel.repositories.TripRepository;
+import com.pettravel.repositories.PetRepository;
 
 @Service
 public class TripService {
 
     private final TripRepository tripRepository;
     private final TripTaskService tripTaskService;
+    private final PetRepository petRepository;
 
-    public TripService(TripRepository tripRepository, TripTaskService tripTaskService) {
+    public TripService(TripRepository tripRepository, TripTaskService tripTaskService, PetRepository petRepository) {
         this.tripRepository = tripRepository;
         this.tripTaskService = tripTaskService;
+        this.petRepository = petRepository;
     }
 
     @Transactional(readOnly = true)
@@ -61,13 +65,26 @@ public class TripService {
     }
 
     @Transactional(readOnly = true)
-    public List<DeadlineResponse> getTripDeadlines(Long id) {
+    public List<TaskResponse> getTripTasks(Long id) {
         tripRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Trip not found"));
         return tripTaskService.getTasksForTrip(id).stream()
-                .map(task -> new DeadlineResponse(
+                .map(task -> new TaskResponse(
+                        task.getId(),
                         task.getRule().getName(),
                         task.getEarliestDateTime(),
-                        task.getLatestDateTime()))
+                        task.getLatestDateTime(),
+                        task.isCompleted()))
                 .toList();
+    }
+
+    @Transactional
+    public Trip addPetToTrip(Long tripId, Long petId) {
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new IllegalArgumentException("Trip not found"));
+        // Assuming you have a method to fetch the Pet entity by its ID
+        Pet pet = petRepository.findById(petId)
+                .orElseThrow(() -> new IllegalArgumentException("Pet not found"));
+        trip.getPets().add(pet);
+        return tripRepository.save(trip);
     }
 }

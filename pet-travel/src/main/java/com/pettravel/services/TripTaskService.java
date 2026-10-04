@@ -62,4 +62,11 @@ public class TripTaskService {
         DeadlineWindow window = travelRuleService.calculateWindow(trip, countryRule, rule);
         return new TripTask(window.getEarliest(), window.getLatest(), rule, false, null, trip);
     }
+
+    public void updateTaskStatus(Long taskId, boolean isCompleted) {
+        TripTask task = tripTaskRepository.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException("TripTask not found with id: " + taskId));
+        task.setStatus(isCompleted);
+        tripTaskRepository.save(task);
+    }
 }
