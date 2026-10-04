@@ -15,6 +15,9 @@ public class TripTask {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(optional = false)
+    private Trip trip;
+
     private ZonedDateTime earliestDateTime;
     private ZonedDateTime latestDateTime;
 
@@ -23,11 +26,10 @@ public class TripTask {
 
     private boolean status;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Pet pet;
 
-    @ManyToOne(optional = false)
-    private Trip trip;
+    
 
     public TripTask() {
     }

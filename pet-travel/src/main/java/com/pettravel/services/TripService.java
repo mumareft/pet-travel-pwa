@@ -1,5 +1,6 @@
 package com.pettravel.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -51,6 +52,7 @@ public class TripService {
                     trip.setDepartureDate(updatedTrip.getDepartureDate());
                     trip.setArrivalDate(updatedTrip.getArrivalDate());
                     trip.setReturnDate(updatedTrip.getReturnDate());
+                    trip.setPets(updatedTrip.getPets());
                     Trip savedTrip = tripRepository.save(trip);
                     // Replace saved deadlines so every task matches the updated trip.
                     tripTaskService.recalculateTasksForTrip(savedTrip);
@@ -66,14 +68,15 @@ public class TripService {
 
     @Transactional(readOnly = true)
     public List<TaskResponse> getTripTasks(Long id) {
-        tripRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Trip not found"));
         return tripTaskService.getTasksForTrip(id).stream()
                 .map(task -> new TaskResponse(
                         task.getId(),
                         task.getRule().getName(),
                         task.getEarliestDateTime(),
                         task.getLatestDateTime(),
-                        task.isCompleted()))
+                        task.getPet(),
+                        task.isCompleted()
+                        ))
                 .toList();
     }
 
@@ -81,10 +84,12 @@ public class TripService {
     public Trip addPetToTrip(Long tripId, Long petId) {
         Trip trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new IllegalArgumentException("Trip not found"));
-        // Assuming you have a method to fetch the Pet entity by its ID
         Pet pet = petRepository.findById(petId)
                 .orElseThrow(() -> new IllegalArgumentException("Pet not found"));
-        trip.getPets().add(pet);
+
+        if (!trip.getPets().contains(pet)) {
+            trip.getPets().add(pet);
+        }
         return tripRepository.save(trip);
     }
 }

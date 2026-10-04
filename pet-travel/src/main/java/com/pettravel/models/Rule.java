@@ -13,16 +13,19 @@ public class Rule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    private Country country;
+    private String species;
     private String name;
     private String description;
 
     @Enumerated(EnumType.STRING)
     private ReferenceType referenceType;    // DEPARTURE, RETURN, ARRIVAL
 
-    private Integer daysBefore;
     private Integer earliestHourBefore;
     private Integer latestHourBefore;
+
+    @Enumerated(EnumType.STRING)
+    private RuleDirection direction; // ENTRY, EXIT
 
 
 
@@ -39,6 +42,11 @@ public class Rule {
         DEPARTURE,
         RETURN,
         ARRIVAL
+    }
+
+    public enum RuleDirection {
+        ENTRY,
+        EXIT
     }
 
     public Long getId() {
@@ -73,14 +81,6 @@ public class Rule {
         this.referenceType = referenceType;
     }
 
-    public Integer getDaysBefore() {
-        return daysBefore;
-    }
-
-    public void setDaysBefore(Integer daysBefore) {
-        this.daysBefore = daysBefore;
-    }
-
     public Integer getEarliestHourBefore() {
         return earliestHourBefore;
     }
@@ -95,5 +95,29 @@ public class Rule {
 
     public void setLatestHourBefore(Integer latestHourBefore) {
         this.latestHourBefore = latestHourBefore;
+    }
+
+    public RuleDirection getDirection() {
+        return direction;
+    }
+
+    public void setDirection(RuleDirection direction) {
+        this.direction = direction;
+    }
+
+    public Country getCountry() {
+        return country;
+    }
+
+    public void setCountry(Country country) {
+        this.country = country;
+    }
+
+    public String getSpecies() {
+        return species;
+    }
+
+    public void setSpecies(String species) {
+        this.species = species;
     }
 }

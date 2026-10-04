@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -14,22 +15,26 @@ public class Trip {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private User user;
+    private Country origin;
+    private Country destination;
+    private LocalDateTime departureDT;
+    private LocalDateTime arrivalDT;
+    private LocalDateTime returnDT;
 
-    private LocalDateTime departureDate;
-    private LocalDateTime arrivalDate;
-    private LocalDateTime returnDate;
-    private String originCountry;
-    private String destinationCountry;
-    private List<Pet> pets; 
+    private List<Pet> pets = new ArrayList<>(); 
 
     public Trip() {
     }
 
-    public Trip(LocalDateTime departureDate, LocalDateTime returnDate, String originCountry, String destinationCountry) {
-        this.departureDate = departureDate;
-        this.returnDate = returnDate;
-        this.originCountry = originCountry;
-        this.destinationCountry = destinationCountry;
+    public Trip(LocalDateTime departureDate, LocalDateTime returnDate, Country originCountry, Country destinationCountry, User user, List<Pet> pets) {
+        this.user = user;
+        this.pets = pets;
+        this.departureDT = departureDate;
+        this.returnDT = returnDate;
+        this.origin = originCountry;
+        this.destination = destinationCountry;
+
     }
 
     public Long getId() {
@@ -40,44 +45,52 @@ public class Trip {
         this.id = id;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public LocalDateTime getDepartureDate() {
-        return departureDate;
+        return departureDT;
     }
 
     public void setDepartureDate(LocalDateTime departureDate) {
-        this.departureDate = departureDate;
+        this.departureDT = departureDate;
     }
 
     public LocalDateTime getArrivalDate() {
-        return arrivalDate;
+        return arrivalDT;
     }
 
     public void setArrivalDate(LocalDateTime arrivalDate) {
-        this.arrivalDate = arrivalDate;
+        this.arrivalDT = arrivalDate;
     }
 
     public LocalDateTime getReturnDate() {
-        return returnDate;
+        return returnDT;
     }
 
     public void setReturnDate(LocalDateTime returnDate) {
-        this.returnDate = returnDate;
+        this.returnDT = returnDate;
     }
 
-    public String getOriginCountry() {
-        return originCountry;
+    public Country getOriginCountry() {
+        return origin;
     }
 
-    public void setOriginCountry(String originCountry) {
-        this.originCountry = originCountry;
+    public void setOriginCountry(Country originCountry) {
+        this.origin = originCountry;
     }
 
-    public String getDestinationCountry() {
-        return destinationCountry;
+    public Country getDestinationCountry() {
+        return destination;
     }
 
-    public void setDestinationCountry(String destinationCountry) {
-        this.destinationCountry = destinationCountry;
+    public void setDestinationCountry(Country destinationCountry) {
+        this.destination = destinationCountry;
     }
 
     public List<Pet> getPets() {
