@@ -60,7 +60,6 @@ public class TripTaskService {
                 tasks.add(createTask(trip, pet, rule));
             }
         }
-
         return tripTaskRepository.saveAll(tasks);
     }
 
@@ -76,7 +75,6 @@ public class TripTaskService {
     }
 
     private TripTask createTask(Trip trip, Pet pet, Rule rule) {
-        //////////////////////////////////////////////////
         DeadlineWindow window = travelRuleService.calculateWindow(trip, rule);
         return new TripTask(window.getEarliest(), window.getLatest(), rule, false, pet, trip);
     }

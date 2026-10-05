@@ -6,6 +6,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Rule {
@@ -13,6 +14,7 @@ public class Rule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @ManyToOne 
     private Country country;
     private String species;
     private String name;
@@ -39,9 +41,10 @@ public class Rule {
     }
 
     public enum ReferenceType {
-        DEPARTURE,
-        RETURN,
-        ARRIVAL
+        ORIGIN_DEPARTURE,
+        OUTBOUND_ARRIVAL,
+        RETURN_DEPARTURE,
+        RETURN_ARRIVAL
     }
 
     public enum RuleDirection {

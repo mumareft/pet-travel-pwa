@@ -5,7 +5,7 @@ import java.time.ZoneId;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
-@Converter
+@Converter(autoApply = true)
 public class ZoneIdConverter implements AttributeConverter<ZoneId, String> {
 
     @Override

@@ -39,7 +39,7 @@ public class TaskResponse {
         return latestDateTime;
     }
 
-    public List<Pet> getPets() {
+    public Pet getPets() {
         return pets;
     }
 

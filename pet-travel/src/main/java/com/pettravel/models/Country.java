@@ -18,7 +18,6 @@ public class Country {
     private String name;
     private String code;
 
-    @Convert(converter = ZoneIdConverter.class)
     private ZoneId timeZone;
 
     public Country() {

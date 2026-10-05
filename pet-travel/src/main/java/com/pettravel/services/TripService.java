@@ -45,20 +45,25 @@ public class TripService {
 
     @Transactional
     public Trip updateTrip(Long id, Trip updatedTrip) {
-        return tripRepository.findById(id)
-                .map(trip -> {
-                    trip.setOriginCountry(updatedTrip.getOriginCountry());
-                    trip.setDestinationCountry(updatedTrip.getDestinationCountry());
-                    trip.setDepartureDate(updatedTrip.getDepartureDate());
-                    trip.setArrivalDate(updatedTrip.getArrivalDate());
-                    trip.setReturnDate(updatedTrip.getReturnDate());
-                    trip.setPets(updatedTrip.getPets());
-                    Trip savedTrip = tripRepository.save(trip);
-                    // Replace saved deadlines so every task matches the updated trip.
-                    tripTaskService.recalculateTasksForTrip(savedTrip);
-                    return savedTrip;
-                })
-                .orElse(null);
+    return tripRepository.findById(id)
+            .map(trip -> {
+                trip.setOriginCountry(updatedTrip.getOriginCountry());
+                trip.setDestinationCountry(updatedTrip.getDestinationCountry());
+
+                trip.setOriginDepartureDT(updatedTrip.getOriginDepartureDT());
+                trip.setOutboundArrivalDT(updatedTrip.getOutboundArrivalDT());
+                trip.setReturnDepartureDT(updatedTrip.getReturnDepartureDT());
+                trip.setReturnArrivalDT(updatedTrip.getReturnArrivalDT());
+
+                trip.setPets(updatedTrip.getPets());
+
+                Trip savedTrip = tripRepository.save(trip);
+
+                tripTaskService.recalculateTasksForTrip(savedTrip);
+
+                return savedTrip;
+            })
+            .orElse(null);
     }
 
     @Transactional
