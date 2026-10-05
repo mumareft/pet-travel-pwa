@@ -1,35 +1,38 @@
 package com.pettravel.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import com.pettravel.models.Pet.Species;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "rules")
 public class Rule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne 
+
+    @ManyToOne
+    @JoinColumn(name = "country_id")
     private Country country;
-    private String species;
+
+    @Enumerated(EnumType.STRING)
+    private Species species;
+
+    private String breed;
+
     private String name;
+
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private ReferenceType referenceType;    // DEPARTURE, RETURN, ARRIVAL
+    private ReferenceType referenceType;
 
     private Integer earliestHourBefore;
+
     private Integer latestHourBefore;
 
     @Enumerated(EnumType.STRING)
-    private RuleDirection direction; // ENTRY, EXIT
-
-
+    private RuleDirection direction;
 
     public Rule() {
     }
@@ -58,6 +61,30 @@ public class Rule {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Country getCountry() {
+        return country;
+    }
+
+    public void setCountry(Country country) {
+        this.country = country;
+    }
+
+    public Species getSpecies() {
+        return species;
+    }
+
+    public void setSpecies(Species species) {
+        this.species = species;
+    }
+
+    public String getBreed() {
+        return breed;
+    }
+
+    public void setBreed(String breed) {
+        this.breed = breed;
     }
 
     public String getName() {
@@ -106,21 +133,5 @@ public class Rule {
 
     public void setDirection(RuleDirection direction) {
         this.direction = direction;
-    }
-
-    public Country getCountry() {
-        return country;
-    }
-
-    public void setCountry(Country country) {
-        this.country = country;
-    }
-
-    public String getSpecies() {
-        return species;
-    }
-
-    public void setSpecies(String species) {
-        this.species = species;
     }
 }

@@ -1,27 +1,26 @@
 package com.pettravel.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "pets")
 public class Pet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
 
     @Enumerated(EnumType.STRING)
     private Species species;
+
     private String breed;
+    
     private String microchipNumber;
 
     @ManyToOne (optional = false)
+    @JoinColumn (name = "owner_id", nullable = false)
     private User owner;
 
     public Pet() {

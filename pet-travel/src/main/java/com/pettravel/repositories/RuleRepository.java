@@ -12,29 +12,29 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface RuleRepository extends JpaRepository<Rule, Long> {
 
-    List<Rule> findByCountry(Country country);
+	List<Rule> findByCountry(Country country);
 
-    List<Rule> findByCountryAndSpecies(
-            Country country,
-            Species species
-    );
+	List<Rule> findByCountryAndSpecies(
+		Country country,
+		Species species
+	);
 
-    List<Rule> findByCountryAndSpeciesAndDirection(
-            Country country,
-            Species species,
-            RuleDirection direction
-    );
+	List<Rule> findByCountryAndSpeciesAndDirection(
+		Country country,
+		Species species,
+		RuleDirection direction
+	);
 
     @Query("""
-    SELECT r
-    FROM Rule r
-    WHERE r.country = :country
-      AND r.species = :species
-      AND (r.breed IS NULL OR r.breed = :breed)
+		SELECT r
+		FROM Rule r
+		WHERE r.country = :country
+		AND r.species = :species
+		AND (r.breed IS NULL OR r.breed = :breed)
     """)
     List<Rule> findApplicableRules(
-            Country country,
-            Species species,
-            String breed
+		Country country,
+		Species species,
+		String breed
     );
 }

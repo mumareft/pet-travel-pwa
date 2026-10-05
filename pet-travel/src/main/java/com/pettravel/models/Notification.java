@@ -4,9 +4,14 @@ import java.time.LocalDateTime;
 
 import org.springframework.scheduling.config.Task;
 
+import jakarta.persistence.*;
+
 public class Notification {
     
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private Task task;
     private LocalDateTime scheduledDateTime;
     private boolean sent;

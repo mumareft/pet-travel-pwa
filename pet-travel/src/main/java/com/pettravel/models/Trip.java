@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "trips")
 public class Trip {
 
     @Id
@@ -14,12 +15,15 @@ public class Trip {
     private Long id;
 
     @ManyToOne
+    @JoinColumn (name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
+    @JoinColumn (name = "origin_id")
     private Country origin;
 
     @ManyToOne
+    @JoinColumn (name = "destination_id")
     private Country destination;
 
     private LocalDateTime originDepartureDT;
@@ -28,6 +32,11 @@ public class Trip {
     private LocalDateTime returnArrivalDT;
 
     @ManyToMany
+    @JoinTable(
+            name = "trip_pets",
+            joinColumns = @JoinColumn(name = "trip_id"),
+            inverseJoinColumns = @JoinColumn(name = "pet_id")
+    )
     private List<Pet> pets = new ArrayList<>();
 
     public Trip() {
