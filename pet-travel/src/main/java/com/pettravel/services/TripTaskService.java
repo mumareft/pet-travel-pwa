@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pettravel.dto.DeadlineWindow;
-import com.pettravel.models.Country;
 import com.pettravel.models.Pet;
 import com.pettravel.models.Rule;
 import com.pettravel.models.Trip;

@@ -1,7 +1,6 @@
 package com.pettravel.dto;
 
 import java.time.ZonedDateTime;
-import java.util.List;
 
 import com.pettravel.models.Pet;
 

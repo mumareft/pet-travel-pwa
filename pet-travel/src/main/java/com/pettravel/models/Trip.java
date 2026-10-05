@@ -1,5 +1,6 @@
 package com.pettravel.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -15,15 +16,15 @@ public class Trip {
     private Long id;
 
     @ManyToOne
-    @JoinColumn (name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn (name = "origin_id")
+    @JoinColumn(name = "origin_id", nullable = false)
     private Country origin;
 
     @ManyToOne
-    @JoinColumn (name = "destination_id")
+    @JoinColumn(name = "destination_id", nullable = false)
     private Country destination;
 
     private LocalDateTime originDepartureDT;
@@ -39,8 +40,10 @@ public class Trip {
     )
     private List<Pet> pets = new ArrayList<>();
 
+
     public Trip() {
     }
+
 
     public Trip(
             User user,
@@ -62,75 +65,126 @@ public class Trip {
         this.pets = pets;
     }
 
+
     public Long getId() {
         return id;
     }
+
 
     public void setId(Long id) {
         this.id = id;
     }
 
+
     public User getUser() {
         return user;
     }
+
 
     public void setUser(User user) {
         this.user = user;
     }
 
-    public Country getOriginCountry() {
+
+    public Country getOrigin() {
         return origin;
     }
 
-    public void setOriginCountry(Country origin) {
+
+    public void setOrigin(Country origin) {
         this.origin = origin;
     }
 
-    public Country getDestinationCountry() {
+
+    public Country getDestination() {
         return destination;
     }
 
-    public void setDestinationCountry(Country destination) {
+
+    public void setDestination(Country destination) {
         this.destination = destination;
     }
+
 
     public LocalDateTime getOriginDepartureDT() {
         return originDepartureDT;
     }
 
+
     public void setOriginDepartureDT(LocalDateTime originDepartureDT) {
         this.originDepartureDT = originDepartureDT;
     }
+
 
     public LocalDateTime getOutboundArrivalDT() {
         return outboundArrivalDT;
     }
 
+
     public void setOutboundArrivalDT(LocalDateTime outboundArrivalDT) {
         this.outboundArrivalDT = outboundArrivalDT;
     }
+
 
     public LocalDateTime getReturnDepartureDT() {
         return returnDepartureDT;
     }
 
+
     public void setReturnDepartureDT(LocalDateTime returnDepartureDT) {
         this.returnDepartureDT = returnDepartureDT;
     }
+
 
     public LocalDateTime getReturnArrivalDT() {
         return returnArrivalDT;
     }
 
+
     public void setReturnArrivalDT(LocalDateTime returnArrivalDT) {
         this.returnArrivalDT = returnArrivalDT;
     }
+
 
     public List<Pet> getPets() {
         return pets;
     }
 
+
     public void setPets(List<Pet> pets) {
         this.pets = pets;
+    }
+
+
+    /*
+     * Compatibility methods.
+     *
+     * Keep these temporarily in case TripTaskService or other existing
+     * classes still use getOriginCountry() / getDestinationCountry().
+     *
+     * @JsonIgnore prevents Jackson from exposing duplicate JSON properties.
+     */
+
+    @JsonIgnore
+    public Country getOriginCountry() {
+        return origin;
+    }
+
+
+    @JsonIgnore
+    public void setOriginCountry(Country origin) {
+        this.origin = origin;
+    }
+
+
+    @JsonIgnore
+    public Country getDestinationCountry() {
+        return destination;
+    }
+
+
+    @JsonIgnore
+    public void setDestinationCountry(Country destination) {
+        this.destination = destination;
     }
 }

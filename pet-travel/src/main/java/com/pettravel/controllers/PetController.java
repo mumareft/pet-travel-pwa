@@ -1,7 +1,10 @@
 package com.pettravel.controllers;
 
 import com.pettravel.models.Pet;
+import com.pettravel.models.User;
 import com.pettravel.repositories.PetRepository;
+import com.pettravel.repositories.UserRepository;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,9 +14,14 @@ import java.util.List;
 public class PetController {
 
     private final PetRepository petRepository;
+    private final UserRepository userRepository;
 
-    public PetController(PetRepository petRepository) {
+    public PetController(
+        PetRepository petRepository,
+        UserRepository userRepository
+    ) {
         this.petRepository = petRepository;
+        this.userRepository = userRepository;
     }
 
     @GetMapping
@@ -28,6 +36,13 @@ public class PetController {
 
     @PostMapping
     public Pet createPet(@RequestBody Pet pet) {
+
+        if (pet.getOwner() != null && pet.getOwner().getId() != null) {
+            User owner = userRepository.findById(pet.getOwner().getId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            pet.setOwner(owner);
+        }
         return petRepository.save(pet);
     }
 
