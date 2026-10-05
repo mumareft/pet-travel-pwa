@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pettravel.dto.DeadlineWindow;
+import com.pettravel.dto.TaskResponse;
 import com.pettravel.models.Pet;
 import com.pettravel.models.Rule;
 import com.pettravel.models.Trip;
@@ -27,6 +28,7 @@ public class TripTaskService {
             TripTaskRepository tripTaskRepository,
             TravelRuleService travelRuleService,
             RuleRepository ruleRepository) {
+
         this.tripTaskRepository = tripTaskRepository;
         this.travelRuleService = travelRuleService;
         this.ruleRepository = ruleRepository;
@@ -39,49 +41,106 @@ public class TripTaskService {
 
         for (Pet pet : trip.getPets()) {
 
-            List<Rule> originRules = ruleRepository.findApplicableRules(
-                    trip.getOriginCountry(),
-                    pet.getSpecies(),
-                    pet.getBreed()
-            );
+            List<Rule> originRules =
+                    ruleRepository.findApplicableRules(
+                            trip.getOrigin(),
+                            pet.getSpecies(),
+                            pet.getBreed()
+                    );
 
             for (Rule rule : originRules) {
                 tasks.add(createTask(trip, pet, rule));
             }
 
-            List<Rule> destinationRules = ruleRepository.findApplicableRules(
-                    trip.getDestinationCountry(),
-                    pet.getSpecies(),
-                    pet.getBreed()
-            );
+            List<Rule> destinationRules =
+                    ruleRepository.findApplicableRules(
+                            trip.getDestination(),
+                            pet.getSpecies(),
+                            pet.getBreed()
+                    );
 
             for (Rule rule : destinationRules) {
                 tasks.add(createTask(trip, pet, rule));
             }
         }
+
         return tripTaskRepository.saveAll(tasks);
     }
 
     @Transactional
     public List<TripTask> recalculateTasksForTrip(Trip trip) {
+
         tripTaskRepository.deleteByTrip_Id(trip.getId());
+
         return createTasksForTrip(trip);
     }
 
     @Transactional(readOnly = true)
     public List<TripTask> getTasksForTrip(Long tripId) {
+
         return tripTaskRepository.findByTrip_Id(tripId);
     }
 
-    private TripTask createTask(Trip trip, Pet pet, Rule rule) {
-        DeadlineWindow window = travelRuleService.calculateWindow(trip, rule);
-        return new TripTask(window.getEarliest(), window.getLatest(), rule, false, pet, trip);
+    @Transactional(readOnly = true)
+    public TaskResponse getTaskById(Long taskId) {
+
+        TripTask task = tripTaskRepository.findById(taskId)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "TripTask not found with id: " + taskId
+                        )
+                );
+
+        return toTaskResponse(task);
     }
 
-    public void updateTaskStatus(Long taskId, boolean isCompleted) {
+    private TripTask createTask(
+            Trip trip,
+            Pet pet,
+            Rule rule) {
+
+        DeadlineWindow window =
+                travelRuleService.calculateWindow(trip, rule);
+
+        return new TripTask(
+                window.getEarliest(),
+                window.getLatest(),
+                rule,
+                false,
+                pet,
+                trip
+        );
+    }
+
+    @Transactional
+    public TaskResponse updateTaskStatus(
+            Long taskId,
+            boolean isCompleted) {
+
         TripTask task = tripTaskRepository.findById(taskId)
-                .orElseThrow(() -> new EntityNotFoundException("TripTask not found with id: " + taskId));
+                .orElseThrow(() ->
+                        new EntityNotFoundException(
+                                "TripTask not found with id: " + taskId
+                        )
+                );
+
         task.setStatus(isCompleted);
-        tripTaskRepository.save(task);
+
+        TripTask savedTask =
+                tripTaskRepository.save(task);
+
+        return toTaskResponse(savedTask);
+    }
+
+    private TaskResponse toTaskResponse(TripTask task) {
+
+        return new TaskResponse(
+                task.getId(),
+                task.getRule().getName(),
+                task.getEarliestDateTime(),
+                task.getLatestDateTime(),
+                task.getPet(),
+                task.isCompleted()
+        );
     }
 }

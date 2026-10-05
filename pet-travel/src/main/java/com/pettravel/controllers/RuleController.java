@@ -31,4 +31,20 @@ public class RuleController {
         return ruleRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Rule not found"));
     }
+
+    @PutMapping("/{id}")
+    public Rule updateRule(@PathVariable Long id, @RequestBody Rule updatedRule) {
+        return ruleRepository.findById(id)
+                .map(rule -> {
+                    rule.setName(updatedRule.getName());
+                    rule.setDescription(updatedRule.getDescription());
+                    return ruleRepository.save(rule);
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Rule not found"));
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteRule(@PathVariable Long id) {
+        ruleRepository.deleteById(id);
+    }
 }

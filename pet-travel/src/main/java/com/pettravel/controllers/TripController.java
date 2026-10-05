@@ -27,6 +27,11 @@ public class TripController {
         return tripService.getTripById(id);
     }
 
+    @GetMapping ("/{id}/tasks")
+    public List<TaskResponse> getTripTasks(@PathVariable Long id) {
+        return tripService.getTripTasks(id);
+    }
+
     @PostMapping
     public Trip createTrip(@RequestBody Trip trip) {
         return tripService.createTrip(trip);
@@ -37,18 +42,13 @@ public class TripController {
         return tripService.updateTrip(id, updatedTrip);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteTrip(@PathVariable Long id) {
-        tripService.deleteTrip(id);
-    }
-
-    @GetMapping ("/{id}/tasks")
-    public List<TaskResponse> getTripTasks(@PathVariable Long id) {
-        return tripService.getTripTasks(id);
-    }
-    
     @PutMapping ("/{tripId}/pets/{petId}")
     public Trip addPetToTrip(@PathVariable Long tripId, @PathVariable Long petId) {
         return tripService.addPetToTrip(tripId, petId);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteTrip(@PathVariable Long id) {
+        tripService.deleteTrip(id);
     }
 }
