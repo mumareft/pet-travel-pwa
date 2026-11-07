@@ -21,9 +21,9 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class TripTaskService {
 
-    private final TripTaskRepository tripTaskRepository;
-    private final TravelRuleService travelRuleService;
-    private final RuleRepository ruleRepository;
+	private final TripTaskRepository tripTaskRepository;
+	private final TravelRuleService travelRuleService;
+	private final RuleRepository ruleRepository;
 
     public TripTaskService(
             TripTaskRepository tripTaskRepository,
@@ -83,9 +83,9 @@ public class TripTaskService {
         }
 
         return switch (rule.getReferenceType()) {
-            case ORIGIN_DEPARTURE, OUTBOUND_ARRIVAL ->
+            case ORIGIN_DEPARTURE, DESTINATION_ARRIVAL ->
                     matchesAirline(ruleAirline, trip.getOutboundAirline());
-            case RETURN_DEPARTURE, RETURN_ARRIVAL ->
+            case DESTINATION_DEPARTURE, ORIGIN_ARRIVAL ->
                     matchesAirline(ruleAirline, trip.getReturnAirline());
         };
     }

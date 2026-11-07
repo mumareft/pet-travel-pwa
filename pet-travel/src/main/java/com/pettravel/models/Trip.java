@@ -37,9 +37,9 @@ public class Trip {
     private Airline returnAirline;
 
     private LocalDateTime originDepartureDT;
-    private LocalDateTime outboundArrivalDT;
-    private LocalDateTime returnDepartureDT;
-    private LocalDateTime returnArrivalDT;
+    private LocalDateTime originArrivalDT;
+    private LocalDateTime destinationDepartureDT;
+    private LocalDateTime destinationArrivalDT;
 
     @ManyToMany
     @JoinTable(
@@ -59,18 +59,18 @@ public class Trip {
             Country origin,
             Country destination,
             LocalDateTime originDepartureDT,
-            LocalDateTime outboundArrivalDT,
-            LocalDateTime returnDepartureDT,
-            LocalDateTime returnArrivalDT,
+            LocalDateTime originArrivalDT,
+            LocalDateTime destinationDepartureDT,
+            LocalDateTime destinationArrivalDT,
             List<Pet> pets
     ) {
         this.user = user;
         this.origin = origin;
         this.destination = destination;
         this.originDepartureDT = originDepartureDT;
-        this.outboundArrivalDT = outboundArrivalDT;
-        this.returnDepartureDT = returnDepartureDT;
-        this.returnArrivalDT = returnArrivalDT;
+        this.originArrivalDT = originArrivalDT;
+        this.destinationDepartureDT = destinationDepartureDT;
+        this.destinationArrivalDT = destinationArrivalDT;
         this.pets = pets;
     }
 
@@ -166,33 +166,33 @@ public class Trip {
     }
 
 
-    public LocalDateTime getOutboundArrivalDT() {
-        return outboundArrivalDT;
+    public LocalDateTime getOriginArrivalDT() {
+        return originArrivalDT;
     }
 
 
-    public void setOutboundArrivalDT(LocalDateTime outboundArrivalDT) {
-        this.outboundArrivalDT = outboundArrivalDT;
+    public void setOriginArrivalDT(LocalDateTime originArrivalDT) {
+        this.originArrivalDT = originArrivalDT;
     }
 
 
-    public LocalDateTime getReturnDepartureDT() {
-        return returnDepartureDT;
+    public LocalDateTime getDestinationDepartureDT() {
+        return destinationDepartureDT;
     }
 
 
-    public void setReturnDepartureDT(LocalDateTime returnDepartureDT) {
-        this.returnDepartureDT = returnDepartureDT;
+    public void setDestinationDepartureDT(LocalDateTime destinationDepartureDT) {
+        this.destinationDepartureDT = destinationDepartureDT;
     }
 
 
-    public LocalDateTime getReturnArrivalDT() {
-        return returnArrivalDT;
+    public LocalDateTime getDestinationArrivalDT() {
+        return destinationArrivalDT;
     }
 
 
-    public void setReturnArrivalDT(LocalDateTime returnArrivalDT) {
-        this.returnArrivalDT = returnArrivalDT;
+    public void setDestinationArrivalDT(LocalDateTime destinationArrivalDT) {
+        this.destinationArrivalDT = destinationArrivalDT;
     }
 
 

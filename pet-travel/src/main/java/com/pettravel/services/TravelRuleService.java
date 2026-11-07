@@ -47,44 +47,40 @@ public class TravelRuleService {
     }
 
 
-    private LocalDateTime getReferenceDate(
-            Trip trip,
-            Rule rule) {
+    private LocalDateTime getReferenceDate( Trip trip, Rule rule) {
 
         return switch (rule.getReferenceType()) {
 
             case ORIGIN_DEPARTURE ->
-                    trip.getOriginDepartureDT();
+                trip.getOriginDepartureDT();
 
-            case OUTBOUND_ARRIVAL ->
-                    trip.getOutboundArrivalDT();
+            case ORIGIN_ARRIVAL ->
+                trip.getOriginArrivalDT();
 
-            case RETURN_DEPARTURE ->
-                    trip.getReturnDepartureDT();
+			case DESTINATION_DEPARTURE ->
+                trip.getDestinationDepartureDT();
 
-            case RETURN_ARRIVAL ->
-                    trip.getReturnArrivalDT();
+			case DESTINATION_ARRIVAL ->
+                trip.getDestinationArrivalDT();
         };
     }
 
 
-    private ZoneId getReferenceZone(
-            Trip trip,
-            Rule rule) {
+    private ZoneId getReferenceZone( Trip trip, Rule rule) {
 
         return switch (rule.getReferenceType()) {
 
             case ORIGIN_DEPARTURE ->
                     trip.getOrigin().getTimeZone();
 
-            case OUTBOUND_ARRIVAL ->
-                    trip.getDestination().getTimeZone();
+            case ORIGIN_ARRIVAL ->
+					trip.getOrigin().getTimeZone();
+					
+			case DESTINATION_DEPARTURE ->
+					trip.getDestination().getTimeZone();
 
-            case RETURN_DEPARTURE ->
-                    trip.getDestination().getTimeZone();
-
-            case RETURN_ARRIVAL ->
-                    trip.getOrigin().getTimeZone();
+			case DESTINATION_ARRIVAL ->
+					trip.getDestination().getTimeZone();
         };
     }
 }

@@ -21,12 +21,12 @@ import com.pettravel.repositories.UserRepository;
 @Service
 public class TripService {
 
-    private final TripRepository tripRepository;
-    private final TripTaskService tripTaskService;
-    private final PetRepository petRepository;
-    private final UserRepository userRepository;
-    private final CountryRepository countryRepository;
-    private final AirlineRepository airlineRepository;
+	private final TripRepository tripRepository;
+	private final TripTaskService tripTaskService;
+	private final PetRepository petRepository;
+	private final UserRepository userRepository;
+	private final CountryRepository countryRepository;
+	private final AirlineRepository airlineRepository;
 
 
     public TripService(
@@ -255,21 +255,11 @@ public class TripService {
         /*
          * DATES
          */
-        trip.setOriginDepartureDT(
-                updatedTrip.getOriginDepartureDT()
-        );
+        trip.setOriginDepartureDT(updatedTrip.getOriginDepartureDT());
+		trip.setOriginArrivalDT(updatedTrip.getOriginArrivalDT());
 
-        trip.setOutboundArrivalDT(
-                updatedTrip.getOutboundArrivalDT()
-        );
-
-        trip.setReturnDepartureDT(
-                updatedTrip.getReturnDepartureDT()
-        );
-
-        trip.setReturnArrivalDT(
-                updatedTrip.getReturnArrivalDT()
-        );
+		trip.setDestinationDepartureDT(updatedTrip.getDestinationDepartureDT());
+		trip.setDestinationArrivalDT(updatedTrip.getDestinationArrivalDT());
 
 
         /*

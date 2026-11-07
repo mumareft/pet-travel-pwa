@@ -49,9 +49,9 @@ public class Rule {
 
     public enum ReferenceType {
         ORIGIN_DEPARTURE,
-        OUTBOUND_ARRIVAL,
-        RETURN_DEPARTURE,
-        RETURN_ARRIVAL
+        ORIGIN_ARRIVAL,
+        DESTINATION_DEPARTURE,
+        DESTINATION_ARRIVAL,
     }
 
     public enum RuleDirection {
