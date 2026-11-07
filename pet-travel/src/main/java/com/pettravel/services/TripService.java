@@ -7,11 +7,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pettravel.dto.TaskResponse;
+import com.pettravel.models.Airline;
 import com.pettravel.models.Country;
 import com.pettravel.models.Pet;
 import com.pettravel.models.Trip;
 import com.pettravel.models.User;
 import com.pettravel.repositories.CountryRepository;
+import com.pettravel.repositories.AirlineRepository;
 import com.pettravel.repositories.PetRepository;
 import com.pettravel.repositories.TripRepository;
 import com.pettravel.repositories.UserRepository;
@@ -24,6 +26,7 @@ public class TripService {
     private final PetRepository petRepository;
     private final UserRepository userRepository;
     private final CountryRepository countryRepository;
+    private final AirlineRepository airlineRepository;
 
 
     public TripService(
@@ -31,13 +34,15 @@ public class TripService {
             TripTaskService tripTaskService,
             PetRepository petRepository,
             UserRepository userRepository,
-            CountryRepository countryRepository
+            CountryRepository countryRepository,
+            AirlineRepository airlineRepository
     ) {
         this.tripRepository = tripRepository;
         this.tripTaskService = tripTaskService;
         this.petRepository = petRepository;
         this.userRepository = userRepository;
         this.countryRepository = countryRepository;
+        this.airlineRepository = airlineRepository;
     }
 
 
@@ -113,6 +118,12 @@ public class TripService {
                         );
 
         trip.setDestination(destination);
+
+        /*
+         * AIRLINE (optional)
+         */
+        trip.setOutboundAirline(resolveAirline(trip.getOutboundAirline()));
+        trip.setReturnAirline(resolveAirline(trip.getReturnAirline()));
 
 
         /*
@@ -229,6 +240,17 @@ public class TripService {
             trip.setDestination(destination);
         }
 
+        /*
+         * AIRLINE
+         */
+        if (updatedTrip.getOutboundAirline() != null) {
+            trip.setOutboundAirline(resolveAirline(updatedTrip.getOutboundAirline()));
+        }
+
+        if (updatedTrip.getReturnAirline() != null) {
+            trip.setReturnAirline(resolveAirline(updatedTrip.getReturnAirline()));
+        }
+
 
         /*
          * DATES
@@ -286,7 +308,7 @@ public class TripService {
 
         /*
          * Recalculate tasks because countries, pets,
-         * or dates may have changed.
+         * airline, or dates may have changed.
          */
         tripTaskService.recalculateTasksForTrip(savedTrip);
 
@@ -363,5 +385,22 @@ public class TripService {
         }
 
         return trip;
+    }
+
+    private Airline resolveAirline(Airline airline) {
+        if (airline == null) {
+            return null;
+        }
+
+        if (airline.getId() == null) {
+            throw new IllegalArgumentException("Airline must have an id");
+        }
+
+        return airlineRepository.findById(airline.getId())
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Airline not found: " + airline.getId()
+                        )
+                );
     }
 }

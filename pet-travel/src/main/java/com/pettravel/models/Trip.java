@@ -1,6 +1,7 @@
 package com.pettravel.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -26,6 +27,14 @@ public class Trip {
     @ManyToOne
     @JoinColumn(name = "destination_id", nullable = false)
     private Country destination;
+
+    @ManyToOne
+    @JoinColumn(name = "outbound_airline_id")
+    private Airline outboundAirline;
+
+    @ManyToOne
+    @JoinColumn(name = "return_airline_id")
+    private Airline returnAirline;
 
     private LocalDateTime originDepartureDT;
     private LocalDateTime outboundArrivalDT;
@@ -103,6 +112,47 @@ public class Trip {
 
     public void setDestination(Country destination) {
         this.destination = destination;
+    }
+
+    public Airline getOutboundAirline() {
+        return outboundAirline;
+    }
+
+
+    public void setOutboundAirline(Airline outboundAirline) {
+        this.outboundAirline = outboundAirline;
+    }
+
+
+    public Airline getReturnAirline() {
+        return returnAirline;
+    }
+
+
+    public void setReturnAirline(Airline returnAirline) {
+        this.returnAirline = returnAirline;
+    }
+
+    @JsonProperty(value = "outboundAirlineId", access = JsonProperty.Access.WRITE_ONLY)
+    public void setOutboundAirlineId(Long outboundAirlineId) {
+        this.outboundAirline = airlineReference(outboundAirlineId);
+    }
+
+
+    @JsonProperty(value = "returnAirlineId", access = JsonProperty.Access.WRITE_ONLY)
+    public void setReturnAirlineId(Long returnAirlineId) {
+        this.returnAirline = airlineReference(returnAirlineId);
+    }
+
+
+    private Airline airlineReference(Long airlineId) {
+        if (airlineId == null) {
+            return null;
+        }
+
+        Airline selectedAirline = new Airline();
+        selectedAirline.setId(airlineId);
+        return selectedAirline;
     }
 
 

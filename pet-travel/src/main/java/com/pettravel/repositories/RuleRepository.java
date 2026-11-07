@@ -1,6 +1,7 @@
 package com.pettravel.repositories;
 
 import com.pettravel.models.Country;
+import com.pettravel.models.Airline;
 import com.pettravel.models.Pet.Species;
 import com.pettravel.models.Rule;
 import com.pettravel.models.Rule.RuleDirection;
@@ -31,10 +32,17 @@ public interface RuleRepository extends JpaRepository<Rule, Long> {
 		WHERE r.country = :country
 		AND r.species = :species
 		AND (r.breed IS NULL OR r.breed = :breed)
+		AND (
+			r.airline IS NULL
+			OR r.airline = :outboundAirline
+			OR r.airline = :returnAirline
+		)
     """)
     List<Rule> findApplicableRules(
 		Country country,
 		Species species,
-		String breed
+		String breed,
+		Airline outboundAirline,
+		Airline returnAirline
     );
 }

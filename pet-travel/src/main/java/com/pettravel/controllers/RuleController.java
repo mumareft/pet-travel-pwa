@@ -1,6 +1,8 @@
 package com.pettravel.controllers;
 
 import com.pettravel.models.Rule;
+import com.pettravel.models.Airline;
+import com.pettravel.repositories.AirlineRepository;
 import com.pettravel.repositories.RuleRepository;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,9 +13,13 @@ import java.util.List;
 public class RuleController {
 
     private final RuleRepository ruleRepository;
+    private final AirlineRepository airlineRepository;
 
-    public RuleController(RuleRepository ruleRepository) {
+    public RuleController(
+            RuleRepository ruleRepository,
+            AirlineRepository airlineRepository) {
         this.ruleRepository = ruleRepository;
+        this.airlineRepository = airlineRepository;
     }
 
     @GetMapping
@@ -23,6 +29,9 @@ public class RuleController {
 
     @PostMapping
     public Rule createRule(@RequestBody Rule rule) {
+        if (rule.getAirline() != null) {
+            rule.setAirline(getManagedAirline(rule.getAirline()));
+        }
         return ruleRepository.save(rule);
     }
 
@@ -38,6 +47,9 @@ public class RuleController {
                 .map(rule -> {
                     rule.setName(updatedRule.getName());
                     rule.setDescription(updatedRule.getDescription());
+                    if (updatedRule.getAirline() != null) {
+                        rule.setAirline(getManagedAirline(updatedRule.getAirline()));
+                    }
                     return ruleRepository.save(rule);
                 })
                 .orElseThrow(() -> new IllegalArgumentException("Rule not found"));
@@ -46,5 +58,16 @@ public class RuleController {
     @DeleteMapping("/{id}")
     public void deleteRule(@PathVariable Long id) {
         ruleRepository.deleteById(id);
+    }
+
+    private Airline getManagedAirline(Airline airline) {
+        if (airline.getId() == null) {
+            throw new IllegalArgumentException("Airline must have an id");
+        }
+
+        return airlineRepository.findById(airline.getId())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Airline not found: " + airline.getId()
+                ));
     }
 }

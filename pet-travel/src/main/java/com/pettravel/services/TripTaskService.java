@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pettravel.dto.DeadlineWindow;
 import com.pettravel.dto.TaskResponse;
+import com.pettravel.models.Airline;
 import com.pettravel.models.Pet;
 import com.pettravel.models.Rule;
 import com.pettravel.models.Trip;
@@ -45,26 +46,53 @@ public class TripTaskService {
                     ruleRepository.findApplicableRules(
                             trip.getOrigin(),
                             pet.getSpecies(),
-                            pet.getBreed()
+                            pet.getBreed(),
+                            trip.getOutboundAirline(),
+                            trip.getReturnAirline()
                     );
 
             for (Rule rule : originRules) {
-                tasks.add(createTask(trip, pet, rule));
+                if (isAirlineApplicable(trip, rule)) {
+                    tasks.add(createTask(trip, pet, rule));
+                }
             }
 
             List<Rule> destinationRules =
                     ruleRepository.findApplicableRules(
                             trip.getDestination(),
                             pet.getSpecies(),
-                            pet.getBreed()
+                            pet.getBreed(),
+                            trip.getOutboundAirline(),
+                            trip.getReturnAirline()
                     );
 
             for (Rule rule : destinationRules) {
-                tasks.add(createTask(trip, pet, rule));
+                if (isAirlineApplicable(trip, rule)) {
+                    tasks.add(createTask(trip, pet, rule));
+                }
             }
         }
 
         return tripTaskRepository.saveAll(tasks);
+    }
+
+    private boolean isAirlineApplicable(Trip trip, Rule rule) {
+        Airline ruleAirline = rule.getAirline();
+        if (ruleAirline == null) {
+            return true;
+        }
+
+        return switch (rule.getReferenceType()) {
+            case ORIGIN_DEPARTURE, OUTBOUND_ARRIVAL ->
+                    matchesAirline(ruleAirline, trip.getOutboundAirline());
+            case RETURN_DEPARTURE, RETURN_ARRIVAL ->
+                    matchesAirline(ruleAirline, trip.getReturnAirline());
+        };
+    }
+
+    private boolean matchesAirline(Airline ruleAirline, Airline tripAirline) {
+        return tripAirline != null
+                && ruleAirline.getId().equals(tripAirline.getId());
     }
 
     @Transactional

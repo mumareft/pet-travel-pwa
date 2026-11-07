@@ -15,6 +15,10 @@ public class Rule {
     @JoinColumn(name = "country_id")
     private Country country;
 
+    @ManyToOne
+    @JoinColumn(name = "airline_id")
+    private Airline airline;
+
     @Enumerated(EnumType.STRING)
     private Species species;
 
@@ -69,6 +73,14 @@ public class Rule {
 
     public void setCountry(Country country) {
         this.country = country;
+    }
+
+    public Airline getAirline() {
+        return airline;
+    }
+
+    public void setAirline(Airline airline) {
+        this.airline = airline;
     }
 
     public Species getSpecies() {
