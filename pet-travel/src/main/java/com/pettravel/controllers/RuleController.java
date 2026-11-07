@@ -45,7 +45,7 @@ public class RuleController {
     public Rule updateRule(@PathVariable Long id, @RequestBody Rule updatedRule) {
         return ruleRepository.findById(id)
                 .map(rule -> {
-                    rule.setName(updatedRule.getName());
+                    rule.setTitle(updatedRule.getTitle());
                     rule.setDescription(updatedRule.getDescription());
                     if (updatedRule.getAirline() != null) {
                         rule.setAirline(getManagedAirline(updatedRule.getAirline()));

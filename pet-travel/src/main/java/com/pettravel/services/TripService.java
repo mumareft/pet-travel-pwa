@@ -62,9 +62,7 @@ public class TripService {
     @Transactional
     public Trip createTrip(Trip trip) {
 
-        /*
-         * USER
-         */
+        //USER
         if (trip.getUser() == null || trip.getUser().getId() == null) {
             throw new IllegalArgumentException("User is required");
         }
@@ -79,9 +77,7 @@ public class TripService {
         trip.setUser(user);
 
 
-        /*
-         * ORIGIN COUNTRY
-         */
+        //ORIGIN COUNTRY
         if (trip.getOrigin() == null || trip.getOrigin().getId() == null) {
             throw new IllegalArgumentException("Origin country is required");
         }
@@ -97,9 +93,7 @@ public class TripService {
         trip.setOrigin(origin);
 
 
-        /*
-         * DESTINATION COUNTRY
-         */
+        //DEST COUNTRY
         if (trip.getDestination() == null
                 || trip.getDestination().getId() == null) {
 
@@ -119,16 +113,12 @@ public class TripService {
 
         trip.setDestination(destination);
 
-        /*
-         * AIRLINE (optional)
-         */
+        //AIRLINE
         trip.setOutboundAirline(resolveAirline(trip.getOutboundAirline()));
         trip.setReturnAirline(resolveAirline(trip.getReturnAirline()));
 
 
-        /*
-         * PETS
-         */
+        //PETS
         List<Pet> managedPets = new ArrayList<>();
 
         if (trip.getPets() != null) {
@@ -155,16 +145,12 @@ public class TripService {
         trip.setPets(managedPets);
 
 
-        /*
-         * SAVE TRIP
-         */
+        //SAVE TRIP
         Trip savedTrip = tripRepository.save(trip);
 
 
-        /*
-         * GENERATE TASKS FROM RULES
-         */
-        tripTaskService.createTasksForTrip(savedTrip);
+        //GENERATE TASKS
+        tripTaskService.generateAllTasks(savedTrip);
 
 
         return savedTrip;
@@ -182,9 +168,7 @@ public class TripService {
                 );
 
 
-        /*
-         * USER
-         */
+        //USER
         if (updatedTrip.getUser() != null
                 && updatedTrip.getUser().getId() != null) {
 
@@ -201,9 +185,7 @@ public class TripService {
         }
 
 
-        /*
-         * ORIGIN
-         */
+        //ORIGIN
         if (updatedTrip.getOrigin() != null
                 && updatedTrip.getOrigin().getId() != null) {
 
@@ -220,9 +202,7 @@ public class TripService {
         }
 
 
-        /*
-         * DESTINATION
-         */
+        //DESTINATION
         if (updatedTrip.getDestination() != null
                 && updatedTrip.getDestination().getId() != null) {
 
@@ -240,9 +220,7 @@ public class TripService {
             trip.setDestination(destination);
         }
 
-        /*
-         * AIRLINE
-         */
+        //AIRLINE
         if (updatedTrip.getOutboundAirline() != null) {
             trip.setOutboundAirline(resolveAirline(updatedTrip.getOutboundAirline()));
         }
@@ -252,9 +230,7 @@ public class TripService {
         }
 
 
-        /*
-         * DATES
-         */
+        //DATES
         trip.setOriginDepartureDT(updatedTrip.getOriginDepartureDT());
 		trip.setOriginArrivalDT(updatedTrip.getOriginArrivalDT());
 
@@ -262,9 +238,7 @@ public class TripService {
 		trip.setDestinationArrivalDT(updatedTrip.getDestinationArrivalDT());
 
 
-        /*
-         * PETS
-         */
+        //PETS
         if (updatedTrip.getPets() != null) {
 
             List<Pet> managedPets = new ArrayList<>();
@@ -296,10 +270,7 @@ public class TripService {
         Trip savedTrip = tripRepository.save(trip);
 
 
-        /*
-         * Recalculate tasks because countries, pets,
-         * airline, or dates may have changed.
-         */
+        //RECALCULATE TASKS
         tripTaskService.recalculateTasksForTrip(savedTrip);
 
 
@@ -322,15 +293,14 @@ public class TripService {
 
     @Transactional(readOnly = true)
     public List<TaskResponse> getTripTasks(Long id) {
-
+		Trip trip = tripRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Trip not found: " + id));
         return tripTaskService
-                .getTasksForTrip(id)
+                .generateAllTasks(trip)
                 .stream()
                 .map(task -> new TaskResponse(
                         task.getId(),
-                        task.getRule().getName(),
-                        task.getEarliestDateTime(),
-                        task.getLatestDateTime(),
+                        task.getRule().getTitle(),
+						task.getDueDate(),
                         task.getPet(),
                         task.isCompleted()
                 ))

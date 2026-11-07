@@ -58,6 +58,8 @@ public class Trip {
             User user,
             Country origin,
             Country destination,
+            Airline outboundAirline,
+            Airline returnAirline,
             LocalDateTime originDepartureDT,
             LocalDateTime originArrivalDT,
             LocalDateTime destinationDepartureDT,
@@ -67,6 +69,8 @@ public class Trip {
         this.user = user;
         this.origin = origin;
         this.destination = destination;
+        this.outboundAirline = outboundAirline;
+        this.returnAirline = returnAirline;
         this.originDepartureDT = originDepartureDT;
         this.originArrivalDT = originArrivalDT;
         this.destinationDepartureDT = destinationDepartureDT;

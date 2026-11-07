@@ -1,5 +1,6 @@
 package com.pettravel.dto;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 import com.pettravel.models.Pet;
@@ -8,16 +9,14 @@ public class TaskResponse {
 
     private Long id;
     private String ruleName;
-    private ZonedDateTime earliestDateTime;
-    private ZonedDateTime latestDateTime;
+    private LocalDateTime dueDate;
     private Pet pets;
     private boolean status;
 
-    public TaskResponse(Long id, String ruleName, ZonedDateTime earliestDateTime, ZonedDateTime latestDateTime, Pet pet, boolean status) {
+    public TaskResponse(Long id, String ruleName, LocalDateTime dueDate, Pet pet, boolean status) {
         this.id = id;
         this.ruleName = ruleName;
-        this.earliestDateTime = earliestDateTime;
-        this.latestDateTime = latestDateTime;
+        this.dueDate = dueDate;
         this.pets = pet;
         this.status = status;
     }
@@ -30,12 +29,8 @@ public class TaskResponse {
         return ruleName;
     }
 
-    public ZonedDateTime getEarliestDateTime() {
-        return earliestDateTime;
-    }
-
-    public ZonedDateTime getLatestDateTime() {
-        return latestDateTime;
+    public LocalDateTime getDueDate() {
+        return dueDate;
     }
 
     public Pet getPets() {

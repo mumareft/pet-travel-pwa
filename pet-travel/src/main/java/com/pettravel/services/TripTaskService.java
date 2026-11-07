@@ -1,172 +1,131 @@
 package com.pettravel.services;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.pettravel.dto.DeadlineWindow;
 import com.pettravel.dto.TaskResponse;
-import com.pettravel.models.Airline;
 import com.pettravel.models.Pet;
 import com.pettravel.models.Rule;
 import com.pettravel.models.Trip;
 import com.pettravel.models.TripTask;
+import com.pettravel.models.TripTask.JourneyType;
 import com.pettravel.repositories.RuleRepository;
 import com.pettravel.repositories.TripTaskRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
+
 @Service
 public class TripTaskService {
 
-	private final TripTaskRepository tripTaskRepository;
-	private final TravelRuleService travelRuleService;
 	private final RuleRepository ruleRepository;
+	private final TripTaskRepository tripTaskRepository;
 
-    public TripTaskService( TripTaskRepository tripTaskRepository,
-							TravelRuleService travelRuleService,
-							RuleRepository ruleRepository) {
-        this.tripTaskRepository = tripTaskRepository;
-        this.travelRuleService = travelRuleService;
+	public TripTaskService(RuleRepository ruleRepository, TripTaskRepository tripTaskRepository) {
         this.ruleRepository = ruleRepository;
+		this.tripTaskRepository = tripTaskRepository;
     }
 
-    @Transactional
-    public List<TripTask> createTasksForTrip(Trip trip) {
 
+    public List<TripTask> generateAllTasks(Trip trip) {
         List<TripTask> tasks = new ArrayList<>();
-
         for (Pet pet : trip.getPets()) {
-
-            List<Rule> originRules =
-                    ruleRepository.findApplicableRules(
-                            trip.getOrigin(),
-                            pet.getSpecies(),
-                            pet.getBreed(),
-                            trip.getOutboundAirline(),
-                            trip.getReturnAirline()
-                    );
-
-            for (Rule rule : originRules) {
-                if (isAirlineApplicable(trip, rule)) {
-                    tasks.add(createTask(trip, pet, rule));
-                }
-            }
-
-            List<Rule> destinationRules =
-                    ruleRepository.findApplicableRules(
+            // OUTBOUND
+            List<Rule> outboundRules =
+                    ruleRepository.findCountryAndAirlineRules(
                             trip.getDestination(),
-                            pet.getSpecies(),
-                            pet.getBreed(),
                             trip.getOutboundAirline(),
-                            trip.getReturnAirline()
+                            pet.getSpecies(),
+                            pet.getBreed()
                     );
-
-            for (Rule rule : destinationRules) {
-                if (isAirlineApplicable(trip, rule)) {
-                    tasks.add(createTask(trip, pet, rule));
-                }
+            for (Rule rule : outboundRules) {
+                tasks.add(createTask(
+                        trip,
+                        pet,
+                        rule,
+                        JourneyType.OUTBOUND
+                ));
+            }
+            // RETURN
+            List<Rule> returnRules =
+                    ruleRepository.findCountryAndAirlineRules(
+                            trip.getOrigin(),
+                            trip.getReturnAirline(),
+                            pet.getSpecies(),
+                            pet.getBreed()
+                    );
+            for (Rule rule : returnRules) {
+                tasks.add(createTask(
+                        trip,
+                        pet,
+                        rule,
+                        JourneyType.RETURN
+                ));
             }
         }
-
         return tripTaskRepository.saveAll(tasks);
     }
 
-    private boolean isAirlineApplicable(Trip trip, Rule rule) {
-        Airline ruleAirline = rule.getAirline();
-        if (ruleAirline == null) {
-            return true;
-        }
 
-        return switch (rule.getReferenceType()) {
-            case ORIGIN_DEPARTURE, DESTINATION_ARRIVAL ->
-                    matchesAirline(ruleAirline, trip.getOutboundAirline());
-            case DESTINATION_DEPARTURE, ORIGIN_ARRIVAL ->
-                    matchesAirline(ruleAirline, trip.getReturnAirline());
-        };
-    }
-
-    private boolean matchesAirline(Airline ruleAirline, Airline tripAirline) {
-        return tripAirline != null
-                && ruleAirline.getId().equals(tripAirline.getId());
-    }
-
-    @Transactional
-    public List<TripTask> recalculateTasksForTrip(Trip trip) {
-
-        tripTaskRepository.deleteByTrip_Id(trip.getId());
-
-        return createTasksForTrip(trip);
-    }
-
-    @Transactional(readOnly = true)
-    public List<TripTask> getTasksForTrip(Long tripId) {
-
-        return tripTaskRepository.findByTrip_Id(tripId);
-    }
-
-    @Transactional(readOnly = true)
-    public TaskResponse getTaskById(Long taskId) {
-
-        TripTask task = tripTaskRepository.findById(taskId)
-                .orElseThrow(() ->
-                        new EntityNotFoundException(
-                                "TripTask not found with id: " + taskId
-                        )
-                );
-
-        return toTaskResponse(task);
-    }
-
-    private TripTask createTask(
-            Trip trip,
-            Pet pet,
-            Rule rule) {
-
-        DeadlineWindow window =
-                travelRuleService.calculateWindow(trip, rule);
-
+    private TripTask createTask(Trip trip, Pet pet, Rule rule, JourneyType journeyType) {
+        LocalDateTime dueDate = calculateDueDate(trip, rule, journeyType);
         return new TripTask(
-                window.getEarliest(),
-                window.getLatest(),
-                rule,
-                false,
+                trip,
                 pet,
-                trip
+                rule,
+                dueDate,
+                false,
+                journeyType
         );
     }
 
-    @Transactional
-    public TaskResponse updateTaskStatus(
-            Long taskId,
-            boolean isCompleted) {
 
-        TripTask task = tripTaskRepository.findById(taskId)
-                .orElseThrow(() ->
-                        new EntityNotFoundException(
-                                "TripTask not found with id: " + taskId
-                        )
-                );
+	public List<TripTask> recalculateTasksForTrip(Trip trip) {
+		tripTaskRepository.deleteByTrip_Id(trip.getId());
+		return generateAllTasks(trip);
+	}
 
-        task.setStatus(isCompleted);
 
-        TripTask savedTask =
-                tripTaskRepository.save(task);
-
-        return toTaskResponse(savedTask);
+    private LocalDateTime calculateDueDate(Trip trip, Rule rule, JourneyType journeyType) {
+        LocalDateTime date;
+        if (journeyType == JourneyType.OUTBOUND) {
+            date = trip.getOriginDepartureDT();
+        } else {
+            date = trip.getDestinationDepartureDT();
+        }
+        return date.minusHours(rule.getHoursBefore());
     }
 
-    private TaskResponse toTaskResponse(TripTask task) {
 
-        return new TaskResponse(
-                task.getId(),
-                task.getRule().getName(),
-                task.getEarliestDateTime(),
-                task.getLatestDateTime(),
-                task.getPet(),
-                task.isCompleted()
-        );
-    }
+	public TaskResponse getTaskById(Long taskId) {
+		TripTask task = tripTaskRepository.findById(taskId)
+				.orElseThrow(() ->
+						new EntityNotFoundException("Task not found: " + taskId)
+				);
+		return toTaskResponse(task);
+	}
+
+
+	public TaskResponse updateTaskStatus(Long taskId, boolean isCompleted) {
+		TripTask task = tripTaskRepository.findById(taskId)
+				.orElseThrow(() ->
+						new EntityNotFoundException("Task not found: " + taskId)
+				);
+		task.setCompleted(isCompleted);
+		TripTask savedTask = tripTaskRepository.save(task);
+		return toTaskResponse(savedTask);
+	}
+
+
+	private TaskResponse toTaskResponse(TripTask task) {
+		return new TaskResponse(
+				task.getId(),
+				task.getRule().getTitle(),
+				task.getDueDate(),
+				task.getPet(),
+				task.isCompleted()
+		);
+	}
 }

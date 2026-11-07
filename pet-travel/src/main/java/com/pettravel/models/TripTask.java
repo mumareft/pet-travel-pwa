@@ -1,5 +1,6 @@
 package com.pettravel.models;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 import jakarta.persistence.*;
@@ -12,33 +13,37 @@ public class TripTask {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     private Trip trip;
 
-    private ZonedDateTime earliestDateTime;
-    private ZonedDateTime latestDateTime;
-
-    @ManyToOne(optional = false)
-    private Rule rule;
-
-    private boolean status;
-
-    @ManyToOne(optional = false)
+    @ManyToOne
     private Pet pet;
 
-    
+    @ManyToOne
+    private Rule rule;
+
+    private LocalDateTime dueDate;
+
+    private boolean completed;
+
+    @Enumerated(EnumType.STRING)
+    private JourneyType journeyType;
+
+    public enum JourneyType {
+        OUTBOUND,
+        RETURN
+    }
 
     public TripTask() {
     }
 
-    public TripTask(ZonedDateTime earliestDateTime, ZonedDateTime latestDateTime, Rule rule, boolean status, Pet pet,
-            Trip trip) {
-        this.earliestDateTime = earliestDateTime;
-        this.latestDateTime = latestDateTime;
-        this.rule = rule;
-        this.status = status;
-        this.pet = pet;
+    public TripTask(Trip trip, Pet pet, Rule rule, LocalDateTime dueDate, boolean completed, JourneyType journeyType) {
         this.trip = trip;
+        this.pet = pet;
+        this.rule = rule;
+        this.dueDate = dueDate;
+        this.completed = completed;
+        this.journeyType = journeyType;
     }
 
     public Long getId() {
@@ -49,20 +54,12 @@ public class TripTask {
         this.id = id;
     }
 
-    public ZonedDateTime getEarliestDateTime() {
-        return earliestDateTime;
+    public LocalDateTime getDueDate() {
+        return dueDate;
     }
 
-    public void setEarliestDateTime(ZonedDateTime earliestDateTime) {
-        this.earliestDateTime = earliestDateTime;
-    }
-
-    public ZonedDateTime getLatestDateTime() {
-        return latestDateTime;
-    }
-
-    public void setLatestDateTime(ZonedDateTime latestDateTime) {
-        this.latestDateTime = latestDateTime;
+    public void setDueDate(LocalDateTime dueDate) {
+        this.dueDate = dueDate;
     }
 
     public Rule getRule() {
@@ -74,11 +71,11 @@ public class TripTask {
     }
 
     public boolean isCompleted() {
-        return status;
+        return completed;
     }
 
-    public void setStatus(boolean status) {
-        this.status = status;
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 
     public Pet getPet() {
