@@ -1,7 +1,6 @@
 package com.pettravel.models;
 
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 
 import jakarta.persistence.*;
 

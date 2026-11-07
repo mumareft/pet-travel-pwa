@@ -1,6 +1,5 @@
 package com.pettravel.models;
 
-import com.pettravel.models.Pet.Species;
 import jakarta.persistence.*;
 
 @Entity
