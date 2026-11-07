@@ -25,11 +25,9 @@ public class TripTaskService {
 	private final TravelRuleService travelRuleService;
 	private final RuleRepository ruleRepository;
 
-    public TripTaskService(
-            TripTaskRepository tripTaskRepository,
-            TravelRuleService travelRuleService,
-            RuleRepository ruleRepository) {
-
+    public TripTaskService( TripTaskRepository tripTaskRepository,
+							TravelRuleService travelRuleService,
+							RuleRepository ruleRepository) {
         this.tripTaskRepository = tripTaskRepository;
         this.travelRuleService = travelRuleService;
         this.ruleRepository = ruleRepository;
