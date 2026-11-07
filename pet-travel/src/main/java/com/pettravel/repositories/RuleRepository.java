@@ -4,15 +4,12 @@ import com.pettravel.models.Country;
 import com.pettravel.models.Airline;
 import com.pettravel.models.Pet.Species;
 import com.pettravel.models.Rule;
-// import com.pettravel.models.Rule.RuleDirection;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
 
-@Repository 
 public interface RuleRepository extends JpaRepository<Rule, Long> {
 
 	List<Rule> findByCountry(Country country);
