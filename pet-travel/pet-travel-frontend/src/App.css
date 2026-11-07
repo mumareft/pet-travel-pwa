@@ -1,0 +1,64 @@
+
+.app {
+  max-width: 650px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.trip-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 30px 0;
+}
+
+.trip-form label {
+  font-weight: 600;
+}
+
+.trip-form input,
+.trip-form select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.trip-form button {
+  margin-top: 12px;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+}
+
+.trip-form button:hover {
+  background: #1d4ed8;
+}
+
+.trip-summary,
+.task-list {
+  margin-top: 30px;
+}
+
+.task-item {
+  padding: 14px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.task-item label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.task-deadline {
+  margin: 8px 0 0 25px;
+  color: #666;
+  font-size: 14px;
+}
